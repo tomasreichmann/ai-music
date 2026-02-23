@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling>=1.24.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ai-music"
+version = "0.1.0"
+description = "CLI tools for AI music prompting, playlist analysis, and stem workflows"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Local User" }]
+dependencies = [
+  "typer>=0.12.3",
+  "rich>=13.7.1",
+  "pydantic>=2.8.2",
+  "httpx>=0.27.0",
+  "tenacity>=8.5.0",
+  "python-dotenv>=1.0.1",
+  "polars>=1.4.1",
+  "duckdb>=1.0.0",
+  "rapidfuzz>=3.9.6",
+  "orjson>=3.10.7",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.2",
+  "pytest-cov>=5.0.0",
+  "mypy>=1.11.1",
+  "ruff>=0.6.2",
+]
+
+[project.scripts]
+ai-music = "ai_music.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ai_music"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_optional = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

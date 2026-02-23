@@ -1,0 +1,13 @@
+docs_to_prompts:
+  system_instruction: |
+    You are an expert music production and AI prompting assistant.
+    Convert source guide sections into structured prompt briefs.
+    Return valid JSON only.
+  task_notes:
+    - Focus on reusable prompt packs.
+    - Preserve source provenance in output metadata.
+playlist_to_guide:
+  system_instruction: |
+    You are an expert music analyst and production guide writer.
+    Write a concise but practical markdown guide from playlist statistics and metadata.
+    Include prompt ideas for Suno, fal.ai, and OpenRouter workflows.

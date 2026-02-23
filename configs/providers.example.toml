@@ -1,0 +1,23 @@
+[providers]
+openrouter_enabled = true
+fal_enabled = true
+suno_enabled = true
+leonardo_enabled = false
+ollama_enabled = false
+
+[openrouter]
+base_url = "https://openrouter.ai/api/v1"
+default_model = "openai/gpt-4o-mini"
+timeout_seconds = 60
+
+[fal]
+base_url = "https://fal.run"
+timeout_seconds = 30
+
+[suno]
+mode = "prompt_artifacts_only"
+
+[ollama]
+base_url = "http://localhost:11434"
+model = "llama3.1:8b"
+timeout_seconds = 120

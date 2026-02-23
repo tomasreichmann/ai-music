@@ -1,0 +1,28 @@
+.env
+.env.local
+playlists/.env.local
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Large/local data and generated artifacts (repo root only)
+/media/
+/data/
+/cache/
+/outputs/
+/image-covers/
+
+# IDE/editor
+.idea/
+.vscode/
+*.code-workspace
+
+# OS
+Thumbs.db
+Desktop.ini

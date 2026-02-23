@@ -1,0 +1,5 @@
+profiles:
+  4stem:
+    stems: ["vocals", "drums", "bass", "other"]
+    backend: "uvr"
+    notes: "Default 4-stem separation profile."

@@ -1,0 +1,13 @@
+[llm]
+primary_provider = "openrouter"
+fallback_provider = "ollama"
+
+[openrouter]
+docs_to_prompts_model = "openai/gpt-4o-mini"
+playlist_guide_model = "openai/gpt-4o-mini"
+suno_style_lyrics_model = "google/gemini-3-flash-preview"
+
+[ollama]
+docs_to_prompts_model = "llama3.1:8b"
+playlist_guide_model = "llama3.1:8b"
+suno_style_lyrics_model = "llama3.1:8b"
