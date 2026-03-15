@@ -21,6 +21,12 @@ from ai_music.normalize.tracks import dedupe_normalized_rows, fuzzy_candidates, 
 from ai_music.workflows.docs_to_prompts import build_prompt_briefs_from_docs, index_docs, render_prompt_artifacts
 from ai_music.workflows.playlist_to_guide import build_guide_for_playlist
 from ai_music.workflows.stem_split_batch import run_stem_split_batch
+from ai_music.workflows.suno_song_analysis import (
+    adapt_suno_prompt_baseline,
+    analyze_suno_created_songs,
+    fetch_suno_created_songs,
+    mine_suno_prompt_pack,
+)
 
 
 app = typer.Typer(help="AI music workflow CLI")
@@ -33,6 +39,7 @@ metadata_app = typer.Typer(help="Metadata enrichment")
 guide_app = typer.Typer(help="Playlist-specific guide generation")
 media_app = typer.Typer(help="Media indexing and matching")
 stems_app = typer.Typer(help="Stem split workflows")
+suno_app = typer.Typer(help="Suno API mining and baseline adaptation workflows")
 
 app.add_typer(env_app, name="env")
 app.add_typer(provider_app, name="provider")
@@ -43,6 +50,7 @@ app.add_typer(metadata_app, name="metadata")
 app.add_typer(guide_app, name="guide")
 app.add_typer(media_app, name="media")
 app.add_typer(stems_app, name="stems")
+app.add_typer(suno_app, name="suno")
 
 
 def _cfg():
@@ -480,6 +488,118 @@ def stems_report() -> None:
             }
         )
     _json_echo({"manifests": manifest_summaries, "latest": manifest_summaries[-1]})
+
+
+@suno_app.command("fetch")
+def suno_fetch(
+    mapping_config: Path = typer.Option(
+        Path("configs/suno_api_mapping.template.json"),
+        "--mapping-config",
+        help="Path to Suno API mapping config JSON.",
+    ),
+    window_size: int = typer.Option(500, "--window-size", min=1, max=5000),
+    page_size: int | None = typer.Option(None, "--page-size", min=1, max=500),
+    max_pages: int = typer.Option(100, "--max-pages", min=1, max=1000),
+    fixture_page: list[Path] = typer.Option(
+        [],
+        "--fixture-page",
+        help="Repeatable local JSON fixture page path (offline smoke mode).",
+    ),
+) -> None:
+    cfg = _cfg()
+    result = fetch_suno_created_songs(
+        cfg=cfg,
+        mapping_config_path=mapping_config,
+        window_size=window_size,
+        page_size=page_size,
+        max_pages=max_pages,
+        fixture_pages=fixture_page or None,
+    )
+    _json_echo(result)
+
+
+@suno_app.command("analyze")
+def suno_analyze(
+    style_query: str = typer.Option(..., "--style-query", help='Example: "clinical dnb"'),
+    aliases_config: Path = typer.Option(
+        Path("configs/suno_style_aliases.json"),
+        "--aliases-config",
+        help="Path to style alias JSON.",
+    ),
+    normalized_songs_path: Path | None = typer.Option(
+        None,
+        "--normalized-songs-path",
+        help="Optional path override for normalized Suno songs JSON.",
+    ),
+    min_likes: int = typer.Option(1, "--min-likes", min=1),
+) -> None:
+    cfg = _cfg()
+    result = analyze_suno_created_songs(
+        cfg=cfg,
+        style_query=style_query,
+        aliases_config_path=aliases_config,
+        normalized_songs_path=normalized_songs_path,
+        min_likes=min_likes,
+    )
+    _json_echo(result)
+
+
+@suno_app.command("adapt")
+def suno_adapt(
+    baseline: Path = typer.Option(..., "--baseline", help="Path to baseline JSON."),
+    theme: str = typer.Option(..., "--theme", help='Example: "flying by a private jet"'),
+    model: str | None = typer.Option(None, "--model"),
+    preserve_controls: bool = typer.Option(
+        True,
+        "--preserve-controls/--no-preserve-controls",
+        help="Keep baseline excludes and sliders in adapted output.",
+    ),
+) -> None:
+    cfg = _cfg()
+    result = adapt_suno_prompt_baseline(
+        cfg=cfg,
+        baseline_path=baseline,
+        theme=theme,
+        model=model,
+        preserve_controls=preserve_controls,
+    )
+    _json_echo(result)
+
+
+@suno_app.command("mine")
+def suno_mine(
+    style_query: str = typer.Option(..., "--style-query", help='Example: "clinical dnb"'),
+    theme: str = typer.Option(..., "--theme", help='Example: "flying by a private jet"'),
+    mapping_config: Path = typer.Option(
+        Path("configs/suno_api_mapping.template.json"),
+        "--mapping-config",
+    ),
+    aliases_config: Path = typer.Option(
+        Path("configs/suno_style_aliases.json"),
+        "--aliases-config",
+    ),
+    window_size: int = typer.Option(500, "--window-size", min=1, max=5000),
+    page_size: int | None = typer.Option(None, "--page-size", min=1, max=500),
+    fixture_page: list[Path] = typer.Option(
+        [],
+        "--fixture-page",
+        help="Repeatable local JSON fixture page path (offline smoke mode).",
+    ),
+    model: str | None = typer.Option(None, "--model"),
+) -> None:
+    cfg = _cfg()
+    result = mine_suno_prompt_pack(
+        cfg=cfg,
+        mapping_config_path=mapping_config,
+        aliases_config_path=aliases_config,
+        style_query=style_query,
+        theme=theme,
+        window_size=window_size,
+        page_size=page_size,
+        fixture_pages=fixture_page or None,
+        model=model,
+    )
+    _json_echo(result)
 
 
 @app.command("version")

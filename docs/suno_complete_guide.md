@@ -144,6 +144,26 @@ Use square brackets with descriptive, concise tags (1-3 words maximum):
 
 Place tags above or directly before the lyrics/section they influence.
 
+### Instrumental Tracks: Still Use the Lyrics Box
+
+For instrumental tracks, **do not leave the lyrics box blank**. Use **metatags only** (section headers + production/energy cues) to guide arrangement, transitions, and dynamics without adding sung lines.
+
+**Instrumental metatag-only example:**
+
+```
+[Intro | Instrumental | Filtered pads, sub pulse | Energy: Low]
+
+[Build | Instrumental | Snare roll, riser, arp lift | Energy: Rising]
+
+[Drop | Instrumental | Full drums, bass hook, lead synth | Energy: High]
+
+[Breakdown | Instrumental | Pads, atmospheres, reduced drums | Energy: Medium]
+
+[Drop | Instrumental | Hook variation, impacts | Energy: Very High]
+
+[Outro | Instrumental | Filtered tail, FX decay | Energy: Low]
+```
+
 ### Song Structure Tags
 
 | Tag | Purpose | Example |
@@ -698,4 +718,3 @@ Mastering Suno requires understanding both the technical parameters (GMIV, meta 
 The most important principle: **Think like a creative director, not a keyword matcher.** Provide context, describe emotions and sonic landscapes, and remember that your role is to guide the AI toward your vision through clear, specific, thoughtful prompts.
 
 Experiment with the frameworks in this guide, track what works for your style, and continuously refine your approach. Each iteration makes you a better AI music creator.
-

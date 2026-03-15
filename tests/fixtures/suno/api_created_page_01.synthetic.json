@@ -1,0 +1,82 @@
+{
+  "result": {
+    "items": [
+      {
+        "id": "song-001",
+        "title": "Clinical Corridor",
+        "createdAt": "2026-02-20T12:00:00Z",
+        "stats": {
+          "likes": 12
+        },
+        "flags": {
+          "isCover": false,
+          "isRemaster": false,
+          "isSampleDerived": false,
+          "dependsOnExisting": false,
+          "isUploaded": false
+        },
+        "prompt": {
+          "style": "clinical dnb, sterile reese bass, precise transients",
+          "exclude": [
+            "hardstyle",
+            "dubstep"
+          ],
+          "weirdness": 25,
+          "styleInfluence": 70,
+          "lyrics": "[Verse]\nNeon in a cleanroom night"
+        }
+      },
+      {
+        "id": "song-002",
+        "title": "Jetline Vector",
+        "createdAt": "2026-02-19T12:00:00Z",
+        "stats": {
+          "likes": 4
+        },
+        "flags": {
+          "isCover": false,
+          "isRemaster": false,
+          "isSampleDerived": false,
+          "dependsOnExisting": false,
+          "isUploaded": true
+        },
+        "prompt": {
+          "style": "clinical drum and bass, minimal atmosphere",
+          "exclude": [
+            "hardstyle"
+          ],
+          "weirdness": 35,
+          "styleInfluence": 60,
+          "lyrics": ""
+        }
+      },
+      {
+        "id": "song-003",
+        "title": "Ghost Protocol",
+        "createdAt": "2026-02-18T12:00:00Z",
+        "stats": {
+          "likes": 0
+        },
+        "flags": {
+          "isCover": false,
+          "isRemaster": true,
+          "isSampleDerived": false,
+          "dependsOnExisting": false,
+          "isUploaded": false
+        },
+        "prompt": {
+          "style": "dark neuro dnb",
+          "exclude": [
+            "metal"
+          ],
+          "weirdness": 50,
+          "styleInfluence": 40,
+          "lyrics": ""
+        }
+      }
+    ],
+    "paging": {
+      "nextCursor": "cursor-page-2"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suno Song Analysis"
+  short_description: "Mine Suno originals into reusable prompt baselines"
+  default_prompt: "Use $suno-song-analysis to fetch created songs, filter strict originals, mine a like-weighted baseline, and adapt it to a new theme."

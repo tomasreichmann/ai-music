@@ -69,13 +69,20 @@ def _sanitize_suno_lyrics_parentheses(lyrics: str) -> str:
 
 
 class SunoFragments(BaseModel):
+    sample_prompt: str = ""
     lyrics: str = ""
     style_prompt: str = ""
     exclude_styles: list[str] = Field(default_factory=list)
     vocal_gender: Literal["Male", "Female", "Unset"] = "Unset"
     weirdness: int = Field(default=20, ge=0, le=100)
     style_influence: int = Field(default=70, ge=0, le=100)
+    audio_influence: int | None = Field(default=None, ge=0, le=100)
     song_title: str = "Untitled"
+
+    @field_validator("sample_prompt")
+    @classmethod
+    def normalize_sample_prompt(cls, value: str) -> str:
+        return (value or "").strip()
 
     @field_validator("style_prompt")
     @classmethod
@@ -149,3 +156,4 @@ class RenderedPrompt(BaseModel):
     format: Literal["json", "text", "markdown"]
     payload: dict[str, Any] | str
     metadata: dict[str, Any] = Field(default_factory=dict)
+

@@ -1,0 +1,53 @@
+{
+  "api": {
+    "base_url": "https://api.suno.ai",
+    "created_songs_endpoint": "/v1/me/songs",
+    "http_method": "GET",
+    "headers": {
+      "Authorization": "Bearer {SUNO_API_KEY}"
+    },
+    "page_size_param": "limit",
+    "cursor_param": "cursor",
+    "page_size_default": 50
+  },
+  "response": {
+    "songs_path": "result.items",
+    "next_cursor_path": "result.paging.nextCursor",
+    "fields": {
+      "song_id": "id",
+      "title": "title",
+      "created_at": "createdAt",
+      "likes": "stats.likes",
+      "is_cover": "flags.isCover",
+      "is_remaster": "flags.isRemaster",
+      "is_sample_derived": "flags.isSampleDerived",
+      "depends_on_existing": "flags.dependsOnExisting",
+      "is_uploaded": "flags.isUploaded",
+      "style_prompt": "prompt.style",
+      "exclude_styles": "prompt.exclude",
+      "weirdness": "prompt.weirdness",
+      "style_influence": "prompt.styleInfluence",
+      "lyrics": "prompt.lyrics"
+    }
+  },
+  "normalization": {
+    "truthy_values": [
+      "true",
+      "1",
+      "yes",
+      "y",
+      "on"
+    ],
+    "falsy_values": [
+      "false",
+      "0",
+      "no",
+      "n",
+      "off"
+    ],
+    "exclude_styles_delimiters": [
+      ",",
+      "|"
+    ]
+  }
+}

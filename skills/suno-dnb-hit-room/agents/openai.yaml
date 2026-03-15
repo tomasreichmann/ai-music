@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suno DnB Hit Room"
+  short_description: "3-agent iterative workflow for jump-up festival bangers"
+  default_prompt: "Use $suno-dnb-hit-room to run Round 1 discovery questions, Round 2 direction scoring/selection, and Round 3 polish for a high-octane jump-up DnB prompt. Enforce lyric safety with $suno-lyrics-tag-guardrails."

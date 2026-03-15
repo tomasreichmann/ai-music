@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suno Lyrics Tag Guardrails"
+  short_description: "Keep Suno instructions in [] and support vocals in ()"
+  default_prompt: "Use $suno-lyrics-tag-guardrails to generate or revise Suno lyrics so non-sung instructions are always in [] and support vocals are always in (). Apply strict line grammar and run a final compliance pass."

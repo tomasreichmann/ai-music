@@ -99,15 +99,30 @@ def _generate_suno_fragments_with_llm(
                 "requirements": {
                     "style_prompt_max_chars": 1000,
                     "suno_fields": [
+                        "sample_prompt",
                         "lyrics",
                         "style_prompt",
                         "exclude_styles",
                         "vocal_gender",
                         "weirdness",
                         "style_influence",
+                        "audio_influence",
                         "song_title",
                     ],
                     "focus": "high-quality Suno style prompt and lyrics suitable for manual form entry",
+                    "sample_prompt_usage": (
+                        "Use `sample_prompt` for sound-to-song / audio-guided generation intent. "
+                        "It may be blank if no source audio/sound is being used."
+                    ),
+                    "prompt_wording_rule": (
+                        "Prefer positive wording for `sample_prompt` and `style_prompt` (describe what to generate). "
+                        "Avoid negative genre/style anchors such as `no hardstyle` or `not dubstep` because naming the unwanted "
+                        "style can increase drift toward it. Put explicit exclusions in `exclude_styles` instead."
+                    ),
+                    "audio_influence_rule": (
+                        "Set `audio_influence` only when using a source audio/sound for generation; "
+                        "otherwise return null."
+                    ),
                     "lyrics_parentheses_rule": (
                         "Round parentheses may only contain sung/spoken ad-libs (e.g., yeah, oh, rewind). "
                         "Do not put nonverbal production or instrument cues in parentheses "
@@ -149,15 +164,23 @@ def _enforce_suno_lyrics_phrase_structure_with_llm(
         schema: dict[str, Any] = {
             "type": "object",
             "properties": {
+                "sample_prompt": {"type": "string"},
                 "lyrics": {"type": "string"},
                 "song_title": {"type": "string"},
                 "weirdness": {"type": "integer", "minimum": 0, "maximum": 100},
                 "style_influence": {"type": "integer", "minimum": 0, "maximum": 100},
+                "audio_influence": {
+                    "anyOf": [
+                        {"type": "integer", "minimum": 0, "maximum": 100},
+                        {"type": "null"},
+                    ]
+                },
                 "vocal_gender": {"type": "string", "enum": ["Male", "Female", "Unset"]},
                 "style_prompt": {"type": "string"},
                 "exclude_styles": {"type": "array", "items": {"type": "string"}},
             },
             "required": [
+                "sample_prompt",
                 "lyrics",
                 "song_title",
                 "weirdness",
@@ -174,19 +197,31 @@ def _enforce_suno_lyrics_phrase_structure_with_llm(
                 "brief": brief.model_dump(mode="json"),
                 "current_suno_fragments": fragments.model_dump(mode="json"),
                 "requirements": {
-                    "goal": "Rewrite/adjust lyrics so section lengths and phrasing fit standard phrase structure for the target genre/subgenre.",
+                    "goal": (
+                        "Rewrite/adjust lyrics so section lengths and phrasing fit standard phrase structure for the target "
+                        "genre/subgenre, while improving lyric quality and Suno section-boundary reliability."
+                    ),
                     "preserve": [
                         "theme",
                         "core hook idea",
                         "song title (unless a better title is clearly needed)",
+                        "sample prompt unless it conflicts with the source-audio intent",
                         "style prompt unless it conflicts with structure",
                         "vocal gender",
+                        "audio influence if present",
                     ],
                     "structure_enforcement": (
                         "Infer standard phrase structure from genre/subgenre and enforce it in the lyrics. "
                         "For DnB / Dancefloor DnB / Dancehall DnB, use block-based phrasing (typically 8/16/32-bar sections), "
                         "with verse and pre-chorus sections typically 8 bars each and chorus/drop-aligned hook sections typically ~16 bars. "
+                        "Keep line counts and phrase lengths consistent within each comparable section where possible. "
                         "Drops should be mostly instrumental or contain only short hype/ad-lib phrases, not full dense verses."
+                    ),
+                    "lyric_quality_enforcement": (
+                        "Check and improve lyric quality while preserving intent: maintain approximate syllable-count consistency "
+                        "within sections (avoid obvious line-length outliers), keep a deliberate rhyme scheme per section (e.g. AABB/ABAB), "
+                        "avoid forced/perfect rhyme spam outside chant sections, remove accidental repeated words/phrases, and ensure the "
+                        "lyrics are semantically coherent when read top-to-bottom."
                     ),
                     "short_section_padding_rule": (
                         "Suno may merge very short sections into the next section. "
@@ -203,11 +238,16 @@ def _enforce_suno_lyrics_phrase_structure_with_llm(
                     ),
                     "section_format": (
                         "Use square-bracket section headers such as [Verse 1], [Pre-Chorus], [Chorus], [Drop], [Bridge], [Outro]. "
-                        "Do not add bar counts in parentheses."
+                        "Section headers may include pipe-delimited meta tags when useful (examples: [Drop | Aggressive synth lead], "
+                        "[Drop | Energy 9/10], [Verse | Spoken]). Do not add bar counts in parentheses."
                     ),
                     "lyrics_parentheses_rule": (
                         "Round parentheses may only contain sung/spoken ad-libs. "
                         "Do not put instrument/production/nonverbal cues in round parentheses."
+                    ),
+                    "vocal_track_style_specificity_rule": (
+                        "If the song is vocal-led, ensure the style prompt is still instrumentally specific enough to avoid a dry backing track: "
+                        "include concrete drum, bass, hook, and transition sound-design cues where appropriate."
                     ),
                 },
                 "guide_context": [

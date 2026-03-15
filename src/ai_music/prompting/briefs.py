@@ -18,6 +18,38 @@ def _default_song_title(brief: PromptBrief) -> str:
     return title[:80]
 
 
+def _default_sample_prompt(brief: PromptBrief) -> str:
+    genre_bits: list[str] = []
+    if brief.genre:
+        genre_bits.append(str(brief.genre).strip())
+    if brief.subgenre:
+        genre_bits.append(str(brief.subgenre).strip())
+    genre_label = " / ".join([g for g in genre_bits if g]) or "electronic"
+    mood_bits = [m.strip() for m in brief.mood_tags[:3] if str(m).strip()]
+    if mood_bits:
+        return (
+            f"Use the uploaded sound as the core motif/hook and expand it into a full "
+            f"{genre_label} arrangement with {', '.join(mood_bits)} energy."
+        )
+    energy_map = {
+        1: "very low",
+        2: "low",
+        3: "low",
+        4: "medium-low",
+        5: "medium",
+        6: "medium-high",
+        7: "high",
+        8: "high",
+        9: "very high",
+        10: "very high",
+    }
+    energy_desc = energy_map.get(int(brief.energy), "dynamic")
+    return (
+        f"Use the uploaded sound as the core motif/hook and expand it into a full "
+        f"{genre_label} arrangement with {energy_desc} energy."
+    )
+
+
 def build_suno_fragments_from_brief(brief: PromptBrief) -> SunoFragments:
     style_parts: list[str] = []
     if brief.subgenre:
@@ -61,12 +93,14 @@ def build_suno_fragments_from_brief(brief: PromptBrief) -> SunoFragments:
             vocal_gender = raw.capitalize()
 
     return SunoFragments(
+        sample_prompt=_default_sample_prompt(brief),
         lyrics=lyrics,
         style_prompt=style_prompt,
         exclude_styles=exclude_styles,
         vocal_gender=vocal_gender,  # type: ignore[arg-type]
         weirdness=20 if (brief.subgenre or "").lower().startswith("dancefloor") else 30,
         style_influence=75,
+        audio_influence=None,
         song_title=_default_song_title(brief),
     )
 

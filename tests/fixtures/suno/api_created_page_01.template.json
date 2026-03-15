@@ -1,0 +1,33 @@
+{
+  "result": {
+    "items": [
+      {
+        "id": "<song-id>",
+        "title": "<title>",
+        "createdAt": "<ISO-8601>",
+        "stats": {
+          "likes": 0
+        },
+        "flags": {
+          "isCover": false,
+          "isRemaster": false,
+          "isSampleDerived": false,
+          "dependsOnExisting": false,
+          "isUploaded": false
+        },
+        "prompt": {
+          "style": "<style prompt>",
+          "exclude": [
+            "<exclude-style>"
+          ],
+          "weirdness": 20,
+          "styleInfluence": 70,
+          "lyrics": "<lyrics>"
+        }
+      }
+    ],
+    "paging": {
+      "nextCursor": null
+    }
+  }
+}
