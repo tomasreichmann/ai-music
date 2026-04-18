@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <radialGradient id="flare" cx="70%" cy="28%" r="40%">
+      <stop offset="0%" stop-color="#fff5db" stop-opacity="0.95" />
+      <stop offset="45%" stop-color="#f5c47a" stop-opacity="0.42" />
+      <stop offset="100%" stop-color="#f5c47a" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#flare)" />
+</svg>

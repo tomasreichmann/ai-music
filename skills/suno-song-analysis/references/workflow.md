@@ -1,5 +1,21 @@
 # Workflow Reference
 
+## 0. Default v5.5 Target
+
+Unless the user explicitly asks otherwise, treat the adapted output as a prompt pack for stock Suno v5.5 in Create.
+
+Default field mapping:
+
+- `style_prompt` -> `Styles`
+- `lyrics` -> `Lyrics`
+- `sample_prompt` -> use only for audio-guided creation
+
+Personalization note:
+
+- add `Voice` only if singer identity matters
+- add a `Custom Model` only if matching the user's own catalog matters
+- treat My Taste as a later augmentation pass, not as part of the reproducible baseline
+
 ## 1. Fetch
 
 Live API:
@@ -49,6 +65,20 @@ py -3.12 -m ai_music.cli suno mine `
   --style-query "clinical dnb" `
   --theme "flying by a private jet"
 ```
+
+## 5. Use The Adapted Pack In Suno v5.5 Create
+
+1. Open Create and stay on stock `v5.5` unless a `Voice` or `Custom Model` is intentionally part of the run.
+2. Paste `style_prompt` into `Styles`.
+3. Paste `lyrics` into `Lyrics`.
+4. Use `sample_prompt` only if the run starts from source audio.
+5. Keep `Exclude Styles`, `Weirdness`, and `Style Influence` from the adapted output as the first reproducible pass.
+6. If you try My Taste afterward, save that as a second pass rather than overwriting the baseline.
+7. If the mined slider values feel extreme, keep the original baseline intact and create a second comparison pass instead of silently normalizing it.
+8. For that comparison pass, use:
+   - genre-locked cleanup: `Weirdness 15-35`, `Style Influence 70-85`
+   - looser exploration: `Weirdness 35-55`, `Style Influence 55-75`
+9. Change only one slider at a time while comparing the baseline to the fallback pass.
 
 ## Troubleshooting
 

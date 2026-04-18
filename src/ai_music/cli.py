@@ -4,9 +4,10 @@ import json
 import shutil
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import typer
+import uvicorn
 
 from ai_music.analyze.playlist_profiles import compute_overlaps, compute_playlist_stats
 from ai_music.config import dump_summary_json, env_doctor_summary, get_app_config
@@ -17,16 +18,21 @@ from ai_music.io.files import read_json, slugify, write_csv, write_json, write_t
 from ai_music.llm.openrouter_client import OpenRouterClient
 from ai_music.media.indexer import index_media_files
 from ai_music.media.matching import match_media_to_playlist
+from ai_music.models.schemas import SunoFragments
 from ai_music.normalize.tracks import dedupe_normalized_rows, fuzzy_candidates, normalize_rows
+from ai_music.video.api import create_video_app
 from ai_music.workflows.docs_to_prompts import build_prompt_briefs_from_docs, index_docs, render_prompt_artifacts
 from ai_music.workflows.playlist_to_guide import build_guide_for_playlist
 from ai_music.workflows.stem_split_batch import run_stem_split_batch
+from ai_music.workflows.suno_browser_fill import fill_suno_create_form
 from ai_music.workflows.suno_song_analysis import (
     adapt_suno_prompt_baseline,
     analyze_suno_created_songs,
     fetch_suno_created_songs,
     mine_suno_prompt_pack,
 )
+from ai_music.workflows.video_studio import analyze_song_audio, generate_scene_image
+from ai_music.workflows.video_studio import transcribe_song_lyrics
 
 
 app = typer.Typer(help="AI music workflow CLI")
@@ -40,6 +46,7 @@ guide_app = typer.Typer(help="Playlist-specific guide generation")
 media_app = typer.Typer(help="Media indexing and matching")
 stems_app = typer.Typer(help="Stem split workflows")
 suno_app = typer.Typer(help="Suno API mining and baseline adaptation workflows")
+video_app = typer.Typer(help="Music video analysis, asset generation, and local API workflows")
 
 app.add_typer(env_app, name="env")
 app.add_typer(provider_app, name="provider")
@@ -51,6 +58,7 @@ app.add_typer(guide_app, name="guide")
 app.add_typer(media_app, name="media")
 app.add_typer(stems_app, name="stems")
 app.add_typer(suno_app, name="suno")
+app.add_typer(video_app, name="video")
 
 
 def _cfg():
@@ -154,8 +162,8 @@ def docs_index() -> None:
 @prompt_app.command("build-from-docs")
 def prompt_build_from_docs(
     no_llm: bool = typer.Option(False, "--no-llm", help="Disable LLM calls and use fallback deterministic generation."),
-    model: str | None = typer.Option(None, "--model"),
-    suno_model: str | None = typer.Option(
+    model: Optional[str] = typer.Option(None, "--model"),
+    suno_model: Optional[str] = typer.Option(
         None,
         "--suno-model",
         help="Optional override for Suno style/lyrics fragment generation (e.g. a Gemini model via OpenRouter).",
@@ -186,7 +194,7 @@ def prompt_render(
 def prompt_pack(
     source: str = typer.Option("docs", "--source", help="Currently only `docs` is supported."),
     no_llm: bool = typer.Option(False, "--no-llm"),
-    suno_model: str | None = typer.Option(
+    suno_model: Optional[str] = typer.Option(
         None,
         "--suno-model",
         help="Optional frontier/specialized model for Suno style+lyrics fragments.",
@@ -414,7 +422,7 @@ def media_index() -> None:
 
 @media_app.command("match-to-playlist")
 def media_match_to_playlist(
-    playlist: str | None = typer.Option(None, "--playlist"),
+    playlist: Optional[str] = typer.Option(None, "--playlist"),
 ) -> None:
     cfg = _cfg()
     media_index_path = cfg.data_dir / "analysis" / "media_index.json"
@@ -448,7 +456,7 @@ def stems_split(
     device: str = typer.Option("cuda", "--device"),
     dry_run: bool = typer.Option(True, "--dry-run/--no-dry-run"),
     overwrite: bool = typer.Option(False, "--overwrite"),
-    limit: int | None = typer.Option(None, "--limit"),
+    limit: Optional[int] = typer.Option(None, "--limit"),
 ) -> None:
     cfg = _cfg()
     result = run_stem_split_batch(
@@ -498,7 +506,7 @@ def suno_fetch(
         help="Path to Suno API mapping config JSON.",
     ),
     window_size: int = typer.Option(500, "--window-size", min=1, max=5000),
-    page_size: int | None = typer.Option(None, "--page-size", min=1, max=500),
+    page_size: Optional[int] = typer.Option(None, "--page-size", min=1, max=500),
     max_pages: int = typer.Option(100, "--max-pages", min=1, max=1000),
     fixture_page: list[Path] = typer.Option(
         [],
@@ -526,7 +534,7 @@ def suno_analyze(
         "--aliases-config",
         help="Path to style alias JSON.",
     ),
-    normalized_songs_path: Path | None = typer.Option(
+    normalized_songs_path: Optional[Path] = typer.Option(
         None,
         "--normalized-songs-path",
         help="Optional path override for normalized Suno songs JSON.",
@@ -548,7 +556,7 @@ def suno_analyze(
 def suno_adapt(
     baseline: Path = typer.Option(..., "--baseline", help="Path to baseline JSON."),
     theme: str = typer.Option(..., "--theme", help='Example: "flying by a private jet"'),
-    model: str | None = typer.Option(None, "--model"),
+    model: Optional[str] = typer.Option(None, "--model"),
     preserve_controls: bool = typer.Option(
         True,
         "--preserve-controls/--no-preserve-controls",
@@ -579,13 +587,13 @@ def suno_mine(
         "--aliases-config",
     ),
     window_size: int = typer.Option(500, "--window-size", min=1, max=5000),
-    page_size: int | None = typer.Option(None, "--page-size", min=1, max=500),
+    page_size: Optional[int] = typer.Option(None, "--page-size", min=1, max=500),
     fixture_page: list[Path] = typer.Option(
         [],
         "--fixture-page",
         help="Repeatable local JSON fixture page path (offline smoke mode).",
     ),
-    model: str | None = typer.Option(None, "--model"),
+    model: Optional[str] = typer.Option(None, "--model"),
 ) -> None:
     cfg = _cfg()
     result = mine_suno_prompt_pack(
@@ -600,6 +608,115 @@ def suno_mine(
         model=model,
     )
     _json_echo(result)
+
+
+@suno_app.command("fill-browser")
+def suno_fill_browser(
+    fragments: Path = typer.Option(..., "--fragments", help="Path to a Suno fragments JSON file."),
+    debug_url: str = typer.Option(
+        "http://127.0.0.1:9222",
+        "--debug-url",
+        help="Chrome remote debugging base URL.",
+    ),
+    tab_query: str = typer.Option(
+        "suno",
+        "--tab-query",
+        help="Tab title/URL substring used to pick the right Chrome tab.",
+    ),
+    submit: bool = typer.Option(
+        False,
+        "--submit",
+        help="Click the generate/create button after filling the Suno form.",
+    ),
+) -> None:
+    cfg = _cfg()
+    payload = read_json(fragments)
+    suno_fragments = SunoFragments.model_validate(payload)
+    result = fill_suno_create_form(
+        fragments=suno_fragments,
+        debug_url=debug_url,
+        tab_query=tab_query,
+        submit=submit,
+    )
+    write_json(cfg.outputs_dir / "reports" / "suno_browser_fill_report.json", result)
+    _json_echo(result)
+
+
+@video_app.command("analyze-song")
+def video_analyze_song(
+    audio_path: Path = typer.Option(..., "--audio-path", help="Path to a local song audio file."),
+    song_id: Optional[str] = typer.Option(
+        None,
+        "--song-id",
+        help="Optional stable song identifier. Defaults to a slugified audio filename.",
+    ),
+) -> None:
+    cfg = _cfg()
+    result = analyze_song_audio(cfg=cfg, audio_path=audio_path, song_id=song_id)
+    _json_echo(result)
+
+
+@video_app.command("generate-scene-image")
+def video_generate_scene_image(
+    song_id: str = typer.Option(..., "--song-id"),
+    scene_id: str = typer.Option(..., "--scene-id"),
+    prompt: str = typer.Option(..., "--prompt"),
+    negative_prompt: Optional[str] = typer.Option(None, "--negative-prompt"),
+    width: int = typer.Option(1280, "--width", min=64),
+    height: int = typer.Option(720, "--height", min=64),
+    provider: str = typer.Option("fal", "--provider"),
+    model: Optional[str] = typer.Option(None, "--model"),
+) -> None:
+    cfg = _cfg()
+    result = generate_scene_image(
+        cfg=cfg,
+        song_id=song_id,
+        scene_id=scene_id,
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+        width=width,
+        height=height,
+        provider_name=provider,
+        model=model,
+    )
+    _json_echo(result)
+
+
+@video_app.command("transcribe-lyrics")
+def video_transcribe_lyrics(
+    audio_path: Path = typer.Option(..., "--audio-path", help="Path to a local song audio file."),
+    song_id: Optional[str] = typer.Option(
+        None,
+        "--song-id",
+        help="Optional stable song identifier. Defaults to a slugified audio filename.",
+    ),
+    reference_lyrics_path: Optional[Path] = typer.Option(
+        None,
+        "--reference-lyrics-path",
+        help="Optional reference lyrics file used for later manual review.",
+    ),
+    provider: str = typer.Option("faster-whisper", "--provider"),
+    model: Optional[str] = typer.Option(None, "--model"),
+) -> None:
+    cfg = _cfg()
+    result = transcribe_song_lyrics(
+        cfg=cfg,
+        audio_path=audio_path,
+        song_id=song_id,
+        reference_lyrics_path=reference_lyrics_path,
+        provider_name=provider,
+        model=model,
+    )
+    _json_echo(result)
+
+
+@video_app.command("serve")
+def video_serve(
+    host: str = typer.Option("127.0.0.1", "--host"),
+    port: int = typer.Option(8765, "--port", min=1, max=65535),
+) -> None:
+    cfg = _cfg()
+    uvicorn.run(create_video_app(cfg), host=host, port=port)
 
 
 @app.command("version")

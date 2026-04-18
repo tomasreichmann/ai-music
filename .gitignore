@@ -25,6 +25,16 @@ __pycache__/
 .vscode/
 *.code-workspace
 
+# Local TS workspace artifacts
+apps/video-studio/node_modules/
+apps/video-studio/dist/
+apps/video-studio/.vite/
+apps/video-studio/*.tsbuildinfo
+apps/video-studio/vite.config.js
+apps/video-studio/vite.config.d.ts
+apps/video-studio/vitest.config.js
+apps/video-studio/vitest.config.d.ts
+
 # OS
 Thumbs.db
 Desktop.ini

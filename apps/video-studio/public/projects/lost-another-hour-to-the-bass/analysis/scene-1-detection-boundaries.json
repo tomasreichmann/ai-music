@@ -1,0 +1,30 @@
+[
+    {
+        "label": "guy",
+        "top": 284,
+        "left": 910,
+        "width": 624,
+        "height": 703
+    },
+    {
+        "label": "sink",
+        "top": 342,
+        "left": 1,
+        "width": 442,
+        "height": 369
+    },
+    {
+        "label": "doorway",
+        "top": 24,
+        "left": 640,
+        "width": 404,
+        "height": 679
+    },
+    {
+        "label": "baggie",
+        "top": 818,
+        "left": 574,
+        "width": 183,
+        "height": 124
+    }
+]

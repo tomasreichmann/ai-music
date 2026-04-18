@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suno Browser Fill"
+  short_description: "Attach to Chrome remote debugging and fill an open Suno Create tab"
+  default_prompt: "Use $suno-browser-fill to connect to a Chrome window launched with remote debugging, select the Suno Create tab, and fill the form from a Suno fragments JSON file. Only click Generate when the user explicitly asks."

@@ -1,720 +1,383 @@
-# Comprehensive Guide to Suno AI v4.5 & v5: Prompting and Lyrics
+# Suno v5.5 Song Creation Guide
 
-## Table of Contents
-1. [Version Overview](#version-overview)
-2. [Core Prompting Principles](#core-prompting-principles)
-3. [Prompt Structure and Formulas](#prompt-structure-and-formulas)
-4. [Advanced Meta Tags and Lyrics](#advanced-meta-tags-and-lyrics)
-5. [Lyric Writing Best Practices](#lyric-writing-best-practices)
-6. [Genre-Specific Examples](#genre-specific-examples)
-7. [Common Mistakes and Solutions](#common-mistakes-and-solutions)
-8. [v4.5 vs v5 Comparison](#v45-vs-v5-comparison)
+As checked on April 1, 2026.
 
----
+This repo now treats Suno v5.5 as the default song-creation target.
 
-## Version Overview
+This guide is built from:
 
-### Suno v4.5
-Released in April 2025, v4.5 enhanced the core music generation engine with improved vocal range, more complex sound layering, faster generation speeds, and extended song lengths (up to 8 minutes).
+- the official Suno v5.5 launch post from March 26, 2026
+- the official v5.5 Help articles for `What's New in v5.5`, `Voices`, `Voices FAQ`, `Custom Models`, and `My Taste`
+- still-relevant official creation docs for detailed style instructions, lyrics-box prompting, creative sliders, audio uploads, Add Vocals, Inspire, and Song Editor
+- repo-tested prompting heuristics from existing Suno reference notes
 
-**Key Features:**
-- Enhanced vocal range and emotional depth
-- More accurate genre handling
-- Improved audio balance and reduced artifacts
-- 8-minute song support
-- Better instrument layering and fine details
+When a recommendation below is a repo inference rather than an explicit Suno statement, it is labeled as an inference.
 
-### Suno v5
-Released September 23, 2025, v5 represents the most significant upgrade, introducing studio-grade audio quality, adaptive creative intelligence, persistent voice memory, and professional control suite.
+## Official Current Picture
 
-**Key Features:**
-- Studio-quality sound (10x faster processing)
-- Realistic vocals with emotional nuance (vibrato, whispers, gritty tones)
-- Intelligent composition architecture for flawless structural coherence
-- Persistent voice and instrument memory
-- Professional control suite with granular parameters
-- Adaptive creative intelligence that learns user preferences
-- Improved prompt understanding (requires fewer iterations)
-- Stem separation for editing individual instruments
-- Sample-to-song functionality (upload audio snippets)
+### v5.5 is the default current model
 
----
+Suno announced v5.5 on March 26, 2026 as its newest model and positioned it as a more expressive, more personalized creation flow.
 
-## Core Prompting Principles
+### Voices
 
-### The Foundation: Think Like a Creative Director
+Voices are available to Pro and Premier users. They let you use your own verified singing voice in Suno-generated songs. Suno says the feature is private to the account owner.
 
-Rather than simply listing keywords, frame your prompt as a creative brief. Describe the emotional journey, production choices, and sonic landscape you want to create.
+### Custom Models
 
-### 5 Essential Emotional Anchors
+Custom Models are also for Pro and Premier users. Suno says you can build up to three private models from music you own, using as few as six songs. Training is described as taking about 2 to 5 minutes.
 
-Every memorable Suno song requires these five elements working in concert:
+### My Taste
 
-1. **Vocal Delivery:** How the voice sounds (breathy, strong, whisper-like, gritty, smooth)
-2. **Vocal Emotion:** The feeling conveyed (sadness, joy, nostalgia, intensity, yearning)
-3. **Lyric Emotion:** Story, phrasing, and tone within the lyrics
-4. **Sound Emotion:** Created through tempo, instrumentation, and mix choices
-5. **Meta Context:** Imagined artist, performance instructions, and production cues
+My Taste is available to all users and is enabled by default. In Create, the magic wand in the `Styles` box can expand your draft style text into a more personalized style description based on your Suno listening and creation habits.
 
-### The GMIV Formula (Genre-Mood-Instruments-Vocals)
+### Personas are no longer the top-level default control
 
-A proven structure for building effective prompts:
+The current v5.5 Help flow says the `Voices` button replaced `Personas` in Create. Style Personas still exist, but they are now accessed from within the Voices area.
 
-```
-[Mood] [Genre] track featuring [Instrumentation] and [Vocal Tone] inspired by [Artist/Era]
-```
+## Repo Defaults For v5.5
 
-**Example:**
-"Nostalgic, melancholic indie folk with layered acoustic guitars, soft piano, and warm male vocals reminiscent of early 2000s bedroom pop"
+Unless a user explicitly asks for another version, assume all Suno guidance in this repo targets:
 
-### Anchor Key Descriptors (v5 Technique)
+- stock Suno v5.5 in `Create`
+- `Custom mode` style entry
+- `Styles` for the sonic brief
+- `Lyrics` for sung words, section headers, and section-level direction
+- `Sample Prompt` only when a source sound or uploaded audio is involved
 
-In Suno v5, place important style or mood descriptors at both the beginning and end of your prompt to reinforce consistency. The model responds well to repeated cues.
+Default workflow assumptions:
 
-**Example:**
-"**Cinematic** outlaw country bluesy, raw emotional... southern soul **cinematic**"
+- Start with a manual `Styles` draft first.
+- Use the v5.5 magic wand and My Taste as an optional expansion pass, not as a substitute for intent.
+- Keep negative genre bans out of the prompt text when possible. Use `Exclude Styles` for hard negatives.
+- Leave `Audio Influence` unset unless you are actually generating from source audio.
 
----
+## Fastest Good v5.5 Workflow
 
-## Prompt Structure and Formulas
+1. Pick the right model path.
+   - Use stock `v5.5` for most work.
+   - Use `Voice` when singer identity matters most.
+   - Use a `Custom Model` when continuity with your own catalog matters more than neutral model behavior.
+2. Write a clean manual `Styles` draft before touching the magic wand.
+3. Add structure and performance cues in `Lyrics`.
+4. Set conservative sliders for the first pass.
+5. Generate one version.
+6. Diagnose one thing to change.
+7. Iterate with only one major variable changed at a time.
 
-### Basic 3-Layer Prompt Structure
+## Choosing Between Stock v5.5, Voice, and Custom Model
 
-**Layer 1 - Foundation (Genre + Mood)**
-Start with 1-3 core elements to establish clarity.
+### Use stock v5.5 when
 
-```
-Upbeat indie pop with nostalgic undertones
-```
+- you are exploring a new concept
+- you want the cleanest read on the prompt itself
+- you do not need your own singing voice or catalog fingerprint
 
-**Layer 2 - Enhancement (Instrumentation + Vocal Tone)**
-Add sonic specifics without overloading.
+### Use Voice when
 
-```
-bright electric guitars, catchy melodies, laid-back female vocals
-```
+- the song should sound like you singing it
+- lyric delivery and vocal identity are the main priority
+- you want the arrangement to change but the singer to stay recognizable
 
-**Layer 3 - Refinement (Artist/Era + Specific Details)**
-Cite influences and add nuanced production choices.
+### Use a Custom Model when
 
-```
-inspired by 1990s Britpop, with lo-fi production warmth and close-miked vocal delivery
-```
+- you want the arrangement, harmonic language, and production taste to stay closer to your own catalog
+- you have at least six owned songs that reflect the target sound
+- you are building a repeatable house sound rather than a one-off experiment
 
-**Complete Prompt:**
-"Upbeat indie pop with nostalgic undertones, bright electric guitars, catchy melodies, laid-back female vocals inspired by 1990s Britpop, with lo-fi production warmth and close-miked vocal delivery"
+### Use both only deliberately
 
-### The Narrative Sentence Approach (v5 Optimized)
+Inference: v5.5 gives you multiple personalization levers now. Do not stack `Voice`, `Custom Model`, aggressive `My Taste`, and high-constraining sliders on the first pass unless you already know why each control is needed. Start simpler, then layer personalization.
 
-Suno v5 performs best with story-like, conversational prompts that describe the song's progression.
+## How To Fill Each v5.5 Field
 
-**Example:**
-"Begin with haunting piano and atmospheric pads, gradually evolving into an uptempo indie groove with warm synths, building to an emotional crescendo in the final chorus"
+### Styles
 
-### JSON-Style Precision Prompts (Advanced)
+Treat `Styles` as the production brief, not the lyric sheet.
 
-For highly detailed control, especially in v5, format your prompt like a JSON object:
+Include:
 
-```json
-{
-  "genre": "deep house",
-  "mood": "introspective, meditative",
-  "elements": ["organic strings", "rolling bass", "minimal percussion"],
-  "vocals": "breathy, intimate",
-  "tempo": 120,
-  "production": "analog warmth, analog tape saturation"
-}
+- genre and subgenre
+- mood and energy
+- rhythm or BPM feel
+- instrumentation
+- vocal character
+- mix or era texture
+- arrangement motion
+
+Keep it concrete. Good v5.5 style text usually reads like a short creative brief, not a bag of disconnected tags.
+
+Repo heuristic:
+
+- keep the first-pass `Styles` box under roughly `500` characters
+- lead with overall vibe, groove, and 3-5 high-impact production anchors
+- avoid lyric-like phrases or quoted hook ideas inside `Styles`
+- if the magic wand expansion gets too long, trim it back instead of keeping every detail
+
+Inference: the old v4.5 Help articles on detailed style instructions and better prompts in the lyrics box still map well to v5.5 because the current My Taste flow augments text you already place in `Styles`, rather than replacing the need for clear direction.
+
+#### Working style template
+
+```text
+[genre/subgenre], [mood], [tempo or groove], [core instrumentation],
+[vocal character], [mix texture], [arrangement movement]
 ```
 
----
+#### Example
 
-## Advanced Meta Tags and Lyrics
-
-### Understanding Meta Tags
-
-Meta tags are bracketed instructions that shape how Suno interprets and executes specific song sections. They work best when **placed within the lyrics box** at the start of each section, not just in the style prompt.
-
-### Meta Tag Format and Best Practices
-
-Use square brackets with descriptive, concise tags (1-3 words maximum):
-
-```
-[Tag: Value]
+```text
+Dancefloor drum and bass, tense but euphoric, 174 BPM, reese bass, clipped
+two-step drums, glassy synth lead, short female hook vocals, polished modern
+festival mix, clear build-drop contrast with a bigger second drop
 ```
 
-Place tags above or directly before the lyrics/section they influence.
+### My Taste and the magic wand
 
-### Instrumental Tracks: Still Use the Lyrics Box
+Use the magic wand after your first draft, not before.
 
-For instrumental tracks, **do not leave the lyrics box blank**. Use **metatags only** (section headers + production/energy cues) to guide arrangement, transitions, and dynamics without adding sung lines.
+Good use:
 
-**Instrumental metatag-only example:**
+- draft your own style text
+- press the wand
+- keep the added specificity that helps
+- delete any personalization that pulls the song away from the actual brief
 
-```
-[Intro | Instrumental | Filtered pads, sub pulse | Energy: Low]
+Bad use:
 
-[Build | Instrumental | Snare roll, riser, arp lift | Energy: Rising]
+- pressing the wand into an empty box and letting personalization define the whole song
+- keeping a long wand-expanded paragraph when a tighter sub-`500`-character brief says the same thing more clearly
 
-[Drop | Instrumental | Full drums, bass hook, lead synth | Energy: High]
+### Lyrics
 
-[Breakdown | Instrumental | Pads, atmospheres, reduced drums | Energy: Medium]
+Treat `Lyrics` as the place for:
 
-[Drop | Instrumental | Hook variation, impacts | Energy: Very High]
+- sung words
+- section headers
+- section-level vocal or energy direction
+- instrumental section maps when making an instrumental
 
-[Outro | Instrumental | Filtered tail, FX decay | Energy: Low]
-```
+Recommended grammar:
 
-### Song Structure Tags
+- non-sung instructions in `[]`
+- sung support vocals in `()`
+- lead vocal lines as plain text
+- standalone `...` lines only when you need padding to keep sparse sections from collapsing together
 
-| Tag | Purpose | Example |
-|-----|---------|---------|
-| [Intro] | Lead-in / scene setting | [Intro] [Mood: Dreamy] |
-| [Verse] | Lyrical development | [Verse] [Vocal Style: Conversational] |
-| [Verse 1] | First verse (numbered) | [Verse 1] [Energy: Building] |
-| [Chorus] | Main hook / emotional core | [Chorus] [Energy: High] [Vocal: Powerful] |
-| [Bridge] | Contrast / pivot | [Bridge] [Texture: Stripped Down] |
-| [Pre-Chorus] | Build before chorus | [Pre-Chorus] [Energy: Rising] |
-| [Drop] | Beat-driven instrumental focus | [Drop] [Instrument: 808s, Snare] |
-| [Outro] | Closure or fade-out | [Outro] [Reverb: Long Tail] |
-| [Instrumental] | Non-vocal section | [Instrumental] [Solo: 15s Guitar] |
+#### Vocal-song skeleton
 
-### Vocal Control Meta Tags
+```text
+[Verse 1 | Close, controlled delivery]
+Line one
+Line two
 
-| Tag | Purpose | Examples |
-|-----|---------|----------|
-| [Vocal Style] | Delivery method | Whisper, Strong, Breathy, Gritty, Smooth, Conversational |
-| [Vocal Effect] | Audio processing | Reverb, Delay, Chorus, Compression, Harmonies |
-| [Emotional Tone] | Feeling in voice | Yearning, Aggressive, Vulnerable, Confident, Sarcastic |
-| [Ad-libs] | Vocal flourishes | (Ooh, yeah, uhh) placed in parentheses |
+[Pre-Chorus | Rising tension]
+Line one
+Line two
 
-### Instrumentation Tags
-
-| Tag | Example |
-|-----|---------|
-| [Instrument] | [Instrument: Warm Rhodes Piano] |
-| [Strings] | [Strings: Legato, Orchestral] |
-| [Drums] | [Drums: Live, Dynamic] |
-| [Bass] | [Bass: Analog, Punchy] |
-| [Solo] | [Solo: 12s Saxophone] |
-
-### Advanced Tag Stacking (v5 Feature)
-
-Combine multiple tags using the pipe symbol (|) for complex instructions:
-
-```
-[Verse | Vocal Style: Conversational | Delivery: Slightly Drawn Out | Reverb: Minimal]
-My heart's beating like a drum, waiting for the sun
-```
-
-**Rock Solo Example:**
-```
-[Guitar Solo | 80s Metal Lead | Heavy Distortion | Wide Stereo | Wham Bar Bends]
-```
-
-**Modern Pop Chorus Example:**
-```
-[Chorus | Stacked Harmonies | Modern Polish | Bass Drop]
-We light it up like fire
-```
-
-### Dynamic Instructions in Lyrics (v5 Enhancement)
-
-Embed meta tags to manage specific transitions and instrumental highlights:
-
-```
-[Verse] Soft rise
-[Break: 15s Soaring Accordion Solo]
-We're dancing through the night
-[Chorus] Energy surges, building intensity
-```
-
----
-
-## Lyric Writing Best Practices
-
-### 1. Structure Your Lyrics Clearly
-
-Format lyrics with proper section markers for consistency:
-
-```
-[Verse 1]
-(lyrics here)
-
-[Chorus]
-(lyrics here)
+[Chorus | Wider, louder]
+Hook line
+(support vocal)
+Hook line
 
 [Verse 2]
-(lyrics here)
-
-[Bridge]
-(lyrics here)
-
-[Outro]
-(lyrics here)
+...
 ```
 
-### 2. Maintain Syllable Consistency
+#### Instrumental skeleton
 
-Keep lines between 6-12 syllables for natural flow. Consistent syllable count helps Suno maintain rhythmic coherence:
-
-**Good (8 syllables):**
-"I'm walking down this endless road tonight" (9 syllables - close)
-
-**Avoid (too varied):**
-"I walk" (2) vs "I'm walking down this endless road at night looking for a sign" (12)
-
-### 3. Rhyme Schemes for AI Coherence
-
-Suno responds well to structured rhyme schemes:
-
-- **AABB** - Simple, direct rhymes (lines 1-2 rhyme, 3-4 rhyme)
-  ```
-  I see the morning light (A)
-  It fills me with delight (A)
-  The world is fresh and new (B)
-  And everything feels true (B)
-  ```
-
-- **ABAB** - Alternating rhymes for fluidity
-  ```
-  The wind is in the trees (A)
-  I'm falling to my knees (B)
-  A moment of such ease (A)
-  My heart is put at peace (B)
-  ```
-
-- **AAAB** - Ideal for strong hooks and repetition
-  ```
-  We rise above the pain (A)
-  We dance in the rain (A)
-  We break every chain (A)
-  Together again (B)
-  ```
-
-### 4. Avoid Overused Clichés and Generic Phrases
-
-**Words/phrases to minimize:**
-- Echoes, whispers, neon lights
-- Rise above, soar, shine bright
-- Heart, embrace, grace
-- Tonight, dreams, free
-- Fire, sparks, rain
-- Embark, dancing through the night
-- Blood, tears (unless context-specific)
-- "Feels right," "it's magic"
-
-**Strategy:** Explicitly mention in prompts which clichés to avoid:
-
-```
-Write a song about overcoming hardship, but avoid using: rise above, soar, 
-dreams, fire, or any nature metaphors. Focus on specific, personal imagery instead.
+```text
+[Intro | Instrumental | Filtered pads, sub pulse]
+[Build | Instrumental | Snare rise, arp lift]
+[Drop | Instrumental | Full drums, reese hook, lead synth]
+[Breakdown | Instrumental | Pads, impacts, reduced drums]
+[Drop 2 | Instrumental | Hook variation, wider lead]
+[Outro | Instrumental | Tail and decay]
 ```
 
-**Better Alternative:**
-Instead of "We rise above the pain," try "We build bridges over broken ground"
+Use `Lyrics` to clarify section boundaries even for instrumental tracks. Do not leave the box empty if structure matters. If Suno keeps merging sparse adjacent sections, add a standalone `...` spacer line inside those sections as padding.
 
-### 5. Use Parentheses for Ad-libs and Background Vocals
+### Exclude Styles
 
-Parentheses tell Suno to treat content as non-primary vocal elements:
+Put hard negatives here instead of writing `no <genre>` inside the main style text whenever possible.
 
-```
-[Chorus]
-I'm feeling alive (yeah, yeah)
-Nothing can hold me down (ooh, can't hold me)
-(Background: soft oohs and aahs)
-I'm reaching for the sky
-```
+Reason:
 
-Result: Main lyrics sung clearly, ad-libs layered underneath or as backing vocals.
+- clearer separation of intent
+- less risk of anchoring the model toward the sound you were trying to avoid
 
-### 6. Create Contrast and Dynamic Shifts
+### Creative Sliders
 
-Build engaging songs by varying vocal approach within sections:
+For first passes, start conservative.
 
-```
-[Verse 1 | Whispered, Intimate]
-These quiet moments mean the most to me
-(Background: breathing, subtle strings)
+#### Weirdness
 
-[Pre-Chorus | Building Energy]
-But I'm about to break
+- Official Suno baseline: `50%` is the "normal expected" result.
+- Practical UI range: `0-100`, but most repeatable work lives inside `20-65`.
+- `20-35`: best general first pass
+- `15-20`: low-novelty control band for preservation or tighter DnB exclude discipline
+- `35-55`: balanced exploration
+- `55-70`: deliberate experimentation
+- `70+`: high-risk novelty / chaos-hunting only
 
-[Chorus | Full Power, Layered Harmonies]
-SHOUT IT OUT, LET THEM HEAR!
-```
+#### Style Influence
 
-### 7. Use Spacing and Line Breaks for Emphasis
+- Practical UI range: `0-100`, but most repeatable work lives inside `45-80`.
+- `45-65`: balanced control
+- `65-80`: genre-locked sweet spot
+- `80+`: can become too rigid and may start pulling `Styles` prose into sung lines
 
-Spacing can emphasize syllables and create rhythm:
+#### Audio Influence
 
-```
-I... am... free
-(vs. standard "I am free")
+- only relevant when using source audio
+- `50-65`: good first pass
+- raise it when the source identity disappears
+- lower it when the result feels trapped by the source
 
-We — we — we rise together
-(emphasizes repetition)
-```
+#### Genre starting windows (repo heuristics, not official presets)
 
-### 8. Leverage Specific Artist/Style References in Lyrics
+- Pop / R&B / singer-songwriter: Weirdness `20-30`, Style Influence `70-80`
+- Hip-hop / boom bap / trap: Weirdness `15-35`, Style Influence `68-80`
+- Dancefloor DnB / EDM: Weirdness `20-30`, Style Influence `70-80`
+- Cinematic / ambient / post-rock: Weirdness `25-45`, Style Influence `55-70`
+- Experimental / glitch / hyperpop: Weirdness `45-70`, Style Influence `40-65`
 
-Include instructions based on artistic inspiration:
+Working rule: if the song keeps drifting, raise `Style Influence` before you raise `Weirdness`. If the song feels locked and repetitive, lower `Style Influence` before pushing `Weirdness` higher. If `Styles` text starts getting sung, shorten the `Styles` brief and pull `Style Influence` back under `80` before rewriting the `Lyrics`.
 
-```
-[Verse | Conversational flow inspired by Kendrick Lamar]
-[Chorus | Anthemic, Taylor Swift's "choruses that stick in your head" approach]
-```
+See `docs/reference/suno/creative-sliders-reference.md` for the repo's fuller slider notes.
 
-### 9. Write Simple, Catchy Choruses
+### Sample Prompt and audio-guided creation
 
-Keep choruses straightforward and memorable:
+Only use `Sample Prompt` when you are building from `Sounds` or uploaded audio.
 
-**Effective Chorus (v4.5 & v5):**
-```
-[Chorus]
-Hold on, hold on
-We'll find our way back home
-Hold on, hold on
-You're never alone
-```
+Use it to explain:
 
-**Avoid:**
-Overly complex internal rhyme schemes or abstract storytelling in the hook.
+- what the source audio should do in the final song
+- what should be preserved
+- what should change
 
-### 10. Prioritize Human Editing
+Do not use it for:
 
-AI lyrics serve as drafts. Always refine:
+- lyrics
+- the whole style brief
+- negative genre bans
 
-- Remove redundancy
-- Add specificity and vivid imagery
-- Replace generic descriptions with unique details
-- Vary vocabulary within rhyme schemes
+#### Example sample prompt
 
-**Before:** "Your love is like a light shining bright in the night"
-**After:** "Your laughter echoes through the darkest rooms, like amber on the walls"
-
----
-
-## Genre-Specific Examples
-
-### Gospel / Worship
-
-**Lyric Prompt Structure:**
-
-```
-Theme: A Gospel song celebrating God's faithfulness with uplifting and hopeful tones.
-
-Structure:
-- Verse 1: Introduce the theme of faithfulness
-- Chorus: Reinforce central message "You are faithful, Lord"
-- Verse 2: Add depth with personal testimony
-- Bridge: Build intensity with call-and-response
-- Outro: Affirming refrain
-
-Tone: Uplifting and emotional
-Key phrases: "You are faithful, Lord" and "Your love never changes"
+```text
+Use the uploaded sound as the core hook motif, preserve its rhythmic contour
+and airy texture, then expand it into a full dancefloor drum and bass track
+with a clean intro, lift, and larger second drop.
 ```
 
-**Audio Prompt:**
-"Uplifting Gospel anthem with powerful female vocals, rich organ, live drums, choir harmonies, soulful delivery, contemporary gospel arrangement with traditional roots"
+## Prompt Patterns That Work Well In v5.5
 
-### Reggae
+### Pattern 1: Short creative brief
 
-**Lyric Prompt Structure:**
+Best for most first passes.
 
-```
-Theme: A Reggae song about unity and peace
-
-Structure:
-- Verse 1: Highlight division, longing for unity
-- Chorus: Celebrate togetherness rhythmically
-- Verse 2: Explore love's healing power
-- Bridge: Call to action for peace
-- Outro: One love refrain
-
-Tone: Warm and optimistic
-Key phrases: "One love, one heart" and "Together we rise"
+```text
+Melancholic synthpop, midtempo, warm analog pads, dry drum machine groove,
+close female lead vocal, soft chorus widener, intimate verses that bloom into
+an anthemic final chorus.
 ```
 
-**Audio Prompt:**
-"Mellow reggae with laid-back male vocals, steady bass line, warm guitar rhythms, bongo percussion, positive and peaceful vibe, roots reggae influence"
+### Pattern 2: Section-aware style brief
 
-### Lo-fi Hip-Hop
+Best when structure or pacing matters.
 
-**Lyric Prompt Structure:**
-
-```
-Theme: A mellow Lo-fi track reflecting on personal growth
-
-Structure:
-- Verse 1: Reflective mood, soft imagery
-- Chorus: Focus on moving forward despite challenges
-- Verse 2: Highlight journey toward inner peace
-- Bridge: Soothing refrain emphasizing hope
-- Outro: Peaceful resolution
-
-Tone: Introspective and hopeful
-Key phrases: "One step at a time" and "Finding peace within"
+```text
+Dark cinematic trap-soul, sparse verse with sub and rimshot, wider pre-chorus,
+massive chorus lift with stacked harmonies, glossy but heavy low end, detailed
+transition FX, modern streaming-ready mix.
 ```
 
-**Audio Prompt:**
-"Lo-fi hip-hop beat with jazzy piano, vinyl crackle, soft sampled vocals (optional), chill atmosphere, introspective mood, perfect for studying or late-night reflection"
+### Pattern 3: Manual brief plus My Taste augmentation
 
-### Indie Rock
+Best when you want personalization without surrendering direction.
 
-**Lyric Prompt Structure:**
+1. Write your manual style brief.
+2. Use the magic wand.
+3. Compare the augmented text against your intent.
+4. Trim anything that changed the brief instead of sharpening it.
 
-```
-Theme: A indie rock song about chasing dreams despite obstacles
+## Iteration Playbook For v5.5
 
-Structure:
-- Intro: Atmospheric setup
-- Verse 1: Raw emotion, specific detail
-- Chorus: Memorable hook with call-to-action
-- Verse 2: Narrative progression
-- Bridge: Emotional climax
-- Outro: Hopeful resolution
+### If the prompt is right but the exact song is wrong
 
-Tone: Raw, authentic, slightly melancholic
-Key phrases: Avoid "rise above," use "keep moving," "find the light"
-```
+Use `Inspire` for a broader reinterpretation.
 
-**Audio Prompt:**
-"Energetic indie rock with shoegaze textures, layered electric guitars, driving drums, vulnerable male vocals, anthemic chorus with soaring synth pad, alternative rock production"
+### If the song is close and needs targeted changes
 
----
+Use `Remix` or `Song Editor`.
 
-## Common Mistakes and Solutions
+### If the instrumental works and needs a topline
 
-### Mistake 1: Vague Prompts
+Use `Add Vocals`.
 
-**Problem:** Generic language leads to uninspired, clichéd output.
+### If the source audio is good but the full song is not
 
-**Bad:** "Make a sad song"
-**Better:** "A melancholic ballad with fingerpicked acoustic guitar, breathy female vocals, and imagery of fading autumn leaves and lost moments"
+Keep the source audio and change only one of:
 
-**Solution:** Use the GMIV formula and provide emotional context.
+- `Sample Prompt`
+- `Styles`
+- slider values
 
-### Mistake 2: Overloading with Details
+### If you want reproducible learning
 
-**Problem:** Too much information confuses the AI.
+Save:
 
-**Bad:** "Create a fast-paced hip-hop track with deep bass and rap lyrics about motivation with synths and a 90s vibe but also modern production and catchy hooks and maybe strings and a narrative about overcoming"
+- model choice
+- whether Voice or Custom Model was used
+- final `Styles`
+- final `Lyrics`
+- slider settings
+- whether My Taste augmentation was used
 
-**Better:** "Modern hip-hop with 90s soul samples, deep 808 bass, conscious rap vocals, and nostalgic warmth"
+## Common Mistakes In v5.5
 
-**Solution:** Start with 1-3 core elements, then add refinement layers.
+### Mistake: Letting personalization replace intent
 
-### Mistake 3: Ignoring Song Structure in Lyrics
+Fix: draft your own `Styles` first, then use My Taste as an editing pass.
 
-**Problem:** Unstructured lyrics create incoherent output.
+### Mistake: Mixing field responsibilities
 
-**Bad:** "Write lyrics about hope mixed with verses about heartbreak and then make it uplifting but also sad"
+Fix:
 
-**Better:** Use clear [Verse], [Chorus], [Bridge] markers with consistent emotional progression.
+- `Styles` owns production direction
+- `Lyrics` owns words and section guidance
+- `Sample Prompt` owns source-audio transformation
 
-### Mistake 4: Inconsistent Syllable Count
+### Mistake: Starting with too many constraints
 
-**Problem:** Varying line length disrupts rhythm.
+Fix: begin with stock v5.5, moderate sliders, and no stacked personalization unless you have a reason.
 
-**Bad:**
-```
-I'm walking (2)
-I'm walking down the street thinking about tomorrow (11)
-Sun shines (2)
-```
+### Mistake: Writing negative genre bans into the prompt body
 
-**Better:** Keep verses in 8-10 syllable range consistently.
+Fix: move hard negatives into `Exclude Styles`.
 
-### Mistake 5: Not Using Meta Tags in Lyrics
+### Mistake: Leaving the lyrics box unstructured
 
-**Problem:** Style prompt instructions don't transfer to vocal delivery.
+Fix: use clear section headers, keep support vocals in `()`, and add standalone `...` spacer lines when sparse sections keep collapsing together.
 
-**Bad:** Write instructions in style prompt but don't place meta tags in lyrics.
+### Mistake: Using Audio Influence without source audio
 
-**Better:** Place [Vocal Style: Whisper], [Energy: Building], etc. directly in lyrics section.
+Fix: leave it blank unless the run actually starts from Sounds or an upload.
 
-### Mistake 6: Over-Relying on AI Lyrics Without Editing
+## Legacy Note
 
-**Problem:** AI-generated lyrics often sound generic and emotionless.
+Older community guidance for `v4.5` and `v5` is still useful for detailed prompting, lyrics-box structure, and slider behavior, but treat it as supporting context rather than the default product surface. The current repo default is the v5.5 creation flow released on March 26, 2026.
 
-**Solution:**
-1. Generate lyrics as a draft
-2. Edit for specificity and imagery
-3. Replace clichés with unique phrases
-4. Refine pronunciation and cadence
-5. Re-import edited lyrics for generation
+## Sources
 
-### Mistake 7: Using Too Many Complex Meta Tags
-
-**Problem:** Excessive tags reduce effectiveness and create confusion.
-
-**Bad:** 
-```
-[Verse | Vocal Style: Conversational | Delivery: Slightly Drawn Out | Reverb: Minimal | 
-Compression: Light | Saturation: Subtle | Phrasing: Natural | Breathiness: Medium | 
-Emotional Depth: High | Narrative Focus: Intimate]
-```
-
-**Better:**
-```
-[Verse | Conversational, Intimate | Minimal Reverb]
-```
-
-Keep tags to essential information.
-
-### Mistake 8: Inconsistent Prompting Across Versions
-
-**Problem:** v4.5 and v5 handle prompts differently.
-
-**Solution:** 
-- **v4.5:** More descriptive, explicit instructions needed
-- **v5:** Conversational, narrative prompts work better; fewer iterations needed
-
-### Mistake 9: Forgetting Callback Phrasing
-
-**Problem:** Songs lack cohesion across sections.
-
-**Solution:** Use callback instructions:
-```
-[Chorus | Same vibe as Verse 1 but with more energy]
-Or explicitly reference: "Continue with the same nostalgic warmth..."
-```
-
----
-
-## v4.5 vs v5 Comparison
-
-| Feature | v4.5 | v5 |
-|---------|------|-----|
-| **Audio Quality** | Balanced, improved clarity | Studio-grade, professional |
-| **Generation Speed** | Moderate | 10x faster |
-| **Vocal Nuance** | Natural, limited detail | Human-like with vibrato, whispers, gritty tones |
-| **Max Song Length** | 8 minutes | 8 minutes (but better coherence) |
-| **Prompt Understanding** | Requires more iterations | Smarter interpretation, fewer iterations needed |
-| **Meta Tag Support** | Good | Excellent, more consistent |
-| **Stem Separation** | Not available | Available (Pro: 2 stems, Premier: up to 12 stems) |
-| **Vocal Consistency** | Can drift mid-song | Persistent voice memory |
-| **Genre Handling** | Reliable, sometimes uneven | Smarter fidelity (choirs, metal improved) |
-| **Narrative Prompts** | Works but less refined | Optimized for conversational prompts |
-| **Sample-to-Song** | No | Yes (upload audio snippets) |
-| **Studio Timeline** | Not available | Full section-based editing |
-| **Personas** | Inconsistent | Improved, stay consistent |
-
-### v5-Specific Prompt Tips
-
-1. **Use Narrative Sentences:** Describe the song's journey as a story
-   ```
-   "Start with intimate piano and whispered vocals, building gradually into a soaring 
-   chorus with orchestral strings and layered harmonies"
-   ```
-
-2. **Anchor Descriptors:** Repeat key mood/style words at start and end
-   ```
-   "**Intimate** folk ballad with fingerpicked guitar... deeply **intimate** close-miked vocals"
-   ```
-
-3. **Leverage Creative Boost:** Use Suno's "creative boost" for automatic prompt refinement, but review suggestions
-
-4. **Pronunciation Tweaks:** Fine-tune vocal cadence using modified vowels
-   ```
-   "Looo" instead of "Lo" or "seen!" instead of "seen"
-   ```
-
-5. **Dynamic Building:** Describe energy progression
-   ```
-   "[Energy: Soft] → [Energy: Building] → [Energy: Explosive in Chorus]"
-   ```
-
-### v4.5 Strengths
-
-1. **Established Consistency:** Proven track record for genre handling
-2. **Simpler Processor:** May be faster for some users with older systems
-3. **Known Patterns:** Community has extensive experience with what works
-
----
-
-## Professional Workflow Summary
-
-### Complete Prompt Creation Process
-
-1. **Brainstorm (5 min)**
-   - Genre, mood, artist inspiration
-   - Song theme and emotional arc
-
-2. **Draft Audio Prompt (10 min)**
-   - Use GMIV formula
-   - Add 2-3 descriptive layers
-   - Keep under 150 words
-
-3. **Write Lyric Framework (10-15 min)**
-   - Structure sections clearly
-   - Use simple rhyme schemes (AABB or ABAB)
-   - Include meta tags for vocal direction
-
-4. **Generate and Review (varies)**
-   - Create first version
-   - Assess vocal delivery and structure
-   - Note what worked and what didn't
-
-5. **Iterate with Refinements (as needed)**
-   - Adjust prompts based on output
-   - Edit lyrics for authenticity
-   - Use "Same but..." approach for tweaks
-
-6. **Polish Final Version (10 min)**
-   - Listen for artifacts or inconsistencies
-   - Verify emotional arc
-   - Consider stem separation for final mix (v5)
-
----
-
-## Resources and Tools
-
-### Recommended Workflow Enhancements
-
-1. **Use ChatGPT/Claude for Lyric Drafting**
-   - Train with instructions to avoid clichés
-   - Generate structured section lyrics
-   - Iterate on specific themes
-
-2. **Persona Selection (v5)**
-   - Whisper Soul – lo-fi intimacy
-   - Power Praise – gospel anthems
-   - Retro Diva – synthpop and disco
-   - Conversational Flow – clear hip hop phrasing
-
-3. **Reference Library**
-   - Create a collection of successful prompts
-   - Document what works for each genre
-   - Build artist-style reference bank
-
-### Testing Methodology
-
-**The Three-Tier Test:**
-1. **Noob Tier:** Basic genre + mood
-   ```
-   "Sad piano song"
-   ```
-
-2. **Pro Tier:** Structured, detailed prompt
-   ```
-   "Melancholic piano ballad with sparse strings, intimate male vocals, 
-   lo-fi production warmth, influenced by 2000s bedroom pop"
-   ```
-
-3. **God-Tier:** Full emotional architecture with meta tags
-   ```
-   "[Mood: Introspective] [Vocal Style: Close-Miked, Breathy, Vulnerable]
-   Melancholic piano with sustained strings, intimate male vocals, 
-   warm analog saturation, sparse arrangement emphasizing silence and space"
-   ```
-
----
-
-## Conclusion
-
-Mastering Suno requires understanding both the technical parameters (GMIV, meta tags, syllable structure) and the creative philosophy (emotional anchors, narrative framing, human editing). Version 5 represents a significant leap in audio quality and prompt understanding, making it easier to achieve professional results with fewer iterations.
-
-The most important principle: **Think like a creative director, not a keyword matcher.** Provide context, describe emotions and sonic landscapes, and remember that your role is to guide the AI toward your vision through clear, specific, thoughtful prompts.
-
-Experiment with the frameworks in this guide, track what works for your style, and continuously refine your approach. Each iteration makes you a better AI music creator.
+- Suno Blog: [Suno v5.5: More Expressive. More You.](https://suno.com/blog/v5-5)
+- Suno Help: [v5.5: Voices, Custom models & My Taste](https://help.suno.com/en/categories/2327233-v-5-5-voices-custom-models-my-taste)
+- Suno Help: [Custom Models in v5.5](https://help.suno.com/en/articles/11362497)
+- Suno Help: [My Taste](https://help.suno.com/en/articles/11362561)
+- Suno Help: [What are Personas?](https://help.suno.com/en/articles/3484161)
+- Suno Help: [Add Vocals](https://help.suno.com/en/articles/6882817)
+- Suno Help: [Inspire](https://help.suno.com/en/articles/6882753)
+- Suno Help: [Create in V4.5: Better Prompts in Lyrics](https://help.suno.com/en/articles/5782977)
+- Suno reference notes in this repo:
+  - `docs/reference/suno/creative-sliders-reference.md`
+  - `docs/reference/suno/sounds-sample-workflow.md`
+  - `docs/reference/suno/remix-and-inspire-workflows.md`

@@ -66,6 +66,7 @@ class AppConfig:
             self.outputs_dir / "guides",
             self.outputs_dir / "media",
             self.outputs_dir / "stems",
+            self.outputs_dir / "video",
         ]:
             path.mkdir(parents=True, exist_ok=True)
 

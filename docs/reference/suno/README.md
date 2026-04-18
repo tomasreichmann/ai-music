@@ -1,13 +1,20 @@
 # Suno Feature Reference (Repo Notes)
 
-As checked on February 24, 2026.
+As checked on April 1, 2026.
 
-This folder stores Suno feature reference notes for this repo's prompt workflows and manual generation steps.
+This folder stores supporting Suno reference notes for this repo's prompt workflows and manual generation steps.
 
-- `sounds-sample-workflow.md`: Sounds/audio-guided workflow notes (including this repo's "Sample" terminology)
-- `remix-and-inspire-workflows.md`: Practical guidance for `Remix` and `Inspire`
-- `creative-sliders-reference.md`: Creative slider definitions plus working heuristics
-- `genre-feedback-notes.md`: Genre-specific prompting/lyric QA feedback captured from iteration
+Current default assumption:
+
+- this repo targets Suno v5.5 unless a user explicitly asks for an older flow
+
+Files:
+
+- `v5-5-song-creation-reference.md`: current repo defaults for Suno v5.5 features and Create flow
+- `sounds-sample-workflow.md`: Sounds and audio-guided workflow notes (including this repo's `Sample` terminology)
+- `remix-and-inspire-workflows.md`: practical guidance for `Remix` and `Inspire`
+- `creative-sliders-reference.md`: creative slider definitions plus working heuristics
+- `genre-feedback-notes.md`: genre-specific prompting and lyric QA feedback captured from iteration
 
 Notes:
 
